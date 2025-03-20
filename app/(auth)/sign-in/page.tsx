@@ -7,14 +7,17 @@ import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useMutation } from "convex/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useContext } from "react";
 
 function SignIn() {
 const CreateUser=useMutation(api.users.CreateUser);
 const {user, setUser} = useContext(AuthContext);
+
+const router = useRouter();
 const googleLogin = useGoogleLogin({
   onSuccess: async (tokenResponse) => {
-    console.log(tokenResponse);
+    // console.log(tokenResponse);
     // save it to local storage, case for local storage in nextjs
 
     if(typeof window !== 'undefined'){
@@ -29,15 +32,16 @@ const googleLogin = useGoogleLogin({
 
     const user = await GetAuthUserData(tokenResponse.access_token);
 
-    console.log(user);
+    // console.log(user);
     // save user info
     const result = await CreateUser({
       name: user?.name,
       email: user?.email,
       picture: user?.picture,
     })
-    console.log("final result : ", result);
+    // console.log("final result : ", result);
     setUser(result);
+    router.replace('/ai-assistants')
   },
   onError: errorResponse => console.log(errorResponse),
 });
